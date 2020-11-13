@@ -23,6 +23,13 @@ class Person {
             </a>
         </td>`
     }
+
+    edit(name, surname, email, age){
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.age = age;
+    }
 }
 
 const addBtn = document.querySelector('#add');
@@ -31,20 +38,13 @@ const entries = document.querySelector('tbody');
 
 var check = true;
 
-person_1 = new Person('Tarlan', 'Soltanov', 'tarlan@example.com', '16');
-
-users.push(person_1);
+var edit = false;
 
 for (var i = 0; i < users.length; i++) {
     var row = document.createElement('tr');
     row.innerHTML = users[i].info(i);
     entries.appendChild(row);
-    row.querySelector('#remove').addEventListener("click", () => {
-        removeRow(row);
-    })
-    row.querySelector('#edit').addEventListener("click", ()=>{
-        editEntry(row);
-    })
+    addListeners(row);
 }
 
 addBtn.addEventListener("click", () => {
@@ -78,21 +78,6 @@ addBtn.addEventListener("click", () => {
     return true;
 })
 
-function addEntry(row) {
-    users.push(new Person(row.querySelector('#name').value, 
-        row.querySelector('#surname').value, 
-        row.querySelector('#email').value, 
-        row.querySelector('#age').value));
-    index = parseInt(row.children[0].innerHTML)-1;
-    row.innerHTML = users[index].info(index);
-    row.querySelector('#remove').addEventListener("click", () => {
-        removeRow(row);
-    })
-    row.querySelector('#edit').addEventListener("click", ()=>{
-        editEntry(row);
-    })
-}
-
 function removeRow(row) {
     var removedIndex = row.children[0].innerHTML;
     users.splice(removedIndex - 1,1);
@@ -106,12 +91,24 @@ function adjustIndices() {
     }
 }
 
+function addEntry(row) {
+    users.push(new Person(row.querySelector('#name').value, 
+        row.querySelector('#surname').value, 
+        row.querySelector('#email').value, 
+        row.querySelector('#age').value));
+    index = parseInt(row.children[0].innerHTML)-1;
+    row.innerHTML = users[index].info(index);
+    addListeners(row);
+}
+
 function editEntry(row) {
+    console.log(row);
     if(edit==true){
         return false;
     }
     edit = true;
     index = parseInt(row.children[0].innerHTML)-1;
+    console.log(index);
     row.innerHTML = `
             <td>${index + 1}</td>
             <td><input type="text" id="name" class="form-control input-sm" value="${users[index].name}"/></td>
@@ -128,26 +125,25 @@ function editEntry(row) {
             </td>
             `
     row.querySelector('#success').addEventListener("click", ()=>{
-        users[index].name = row.querySelector('#name').value;
-        users[index].surname = row.querySelector('#surname').value;
-        users[index].email = row.querySelector('#email').value;
-        users[index].age = row.querySelector('#age').value;
+        users[index].edit(row.querySelector('#name').value, 
+            row.querySelector('#surname').value, 
+            row.querySelector('#email').value, 
+            row.querySelector('#age').value);
         row.innerHTML = users[index].info(index);
         edit = false;
-        row.querySelector('#remove').addEventListener("click", () => {
-            removeRow(row);
-        })
-        row.querySelector('#edit').addEventListener("click", ()=>{
-            editEntry(row);
-        })
+        addListeners(row);
     })
     row.querySelector('#cancel').addEventListener("click", () => {
         row.innerHTML = users[index].info(index);
-        row.querySelector('#remove').addEventListener("click", () => {
-            removeRow(row);
-        })
-        row.querySelector('#edit').addEventListener("click", ()=>{
-            editEntry(row);
-        })
+        addListeners(row);
+    })
+}
+
+function addListeners(row){
+    row.querySelector('#remove').addEventListener("click", () => {
+        removeRow(row);
+    })
+    row.querySelector('#edit').addEventListener("click", ()=>{
+        editEntry(row);
     })
 }
