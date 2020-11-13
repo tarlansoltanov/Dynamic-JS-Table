@@ -39,6 +39,9 @@ for (var i = 0; i < users.length; i++) {
     var row = document.createElement('tr');
     row.innerHTML = users[i].info(i);
     entries.appendChild(row);
+    row.querySelector('#remove').addEventListener("click", () => {
+        removeRow(row);
+    })
 }
 
 addBtn.addEventListener("click", () => {
@@ -60,7 +63,7 @@ addBtn.addEventListener("click", () => {
                     </a>
                     </td>`
     row.querySelector('#cancel').addEventListener("click", () => {
-        row.remove();
+        removeRow(row);
         check = true;
     })
     row.querySelector('#success').addEventListener("click", () => {
@@ -79,4 +82,20 @@ function addEntry(row) {
         row.querySelector('#age').value));
     index = parseInt(row.children[0].innerHTML)-1;
     row.innerHTML = users[index].info(index);
+    row.querySelector('#remove').addEventListener("click", () => {
+        removeRow(row);
+    })
+}
+
+function removeRow(row) {
+    var removedIndex = row.children[0].innerHTML;
+    users.splice(removedIndex - 1,1);
+    row.remove();
+    adjustIndices();
+}
+
+function adjustIndices() {
+    for (var i = 0; i < entries.children.length; i++) {
+        entries.children[i].children[0].innerHTML = i+1;
+    }
 }
